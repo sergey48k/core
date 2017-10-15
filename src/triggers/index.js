@@ -2,7 +2,8 @@ const { InvalidTrigger } = require('../errors')
 
 const create = {
   ETHEREUM_TRANSACTION: require('./ethereum/transaction'),
-  ETHEREUM_CONTRACT: require('./ethereum/contract')
+  ETHEREUM_CONTRACT: require('./ethereum/contract'),
+  BITCOIN_TRANSACTION: require('./bitcoin/transaction')
 }
 
 module.exports = trigger => {
