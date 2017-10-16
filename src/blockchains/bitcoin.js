@@ -1,11 +1,9 @@
 const io = require('socket.io-client')
 const createClient = require('./createClient')
 
-module.exports = async (testnet = false) => {
-
-  const url = testnet ? 'https://test-insight.bitpay.com/' : 'https://insight.bitpay.com/'
+module.exports = async () => {
   let connected = false
-  const socket = io(url)
+  const socket = io(process.env.BITCOIN_MAINNET)
 
   socket.on('connect', () => {
     socket.emit('subscribe', 'inv')
@@ -13,17 +11,16 @@ module.exports = async (testnet = false) => {
   })
   socket.on('disconnect', () => (connected = false))
   socket.on('error', error => {
-    debugger
     connected = false
     throw error
   })
 
   return createClient({
     type: 'BITCOIN',
-    network: testnet ? 'TESTNET' : 'MAINNET',
+    network: 'MAINNET',
     isConnected: () => connected,
-    onTransaction: callback => socket.on('tx', transaction => {
-      callback(transaction)
+    onTransaction: callback => socket.on('block', block => {
+      callback({}, block)
     })
   })
 }
