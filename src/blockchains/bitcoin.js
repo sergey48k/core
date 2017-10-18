@@ -4,8 +4,8 @@ const createClient = require('./createClient')
 const request = endpoint => fetch([process.env.BITCOIN_MAINNET, endpoint].join(''))
   .then(x => x.json())
 
-const getBlock = hash => request(`/insight-api/block/${hash}`)
-const getTransaction = hash => request(`/insight-api/tx/${hash}`)
+const getBlock = hash => request(`/api/block/${hash}`)
+const getTransaction = hash => request(`/api/tx/${hash}`)
 
 const onTransaction = socket => callback => socket.on('block', async blockHash => {
   const blockDetails = await getBlock(blockHash)
