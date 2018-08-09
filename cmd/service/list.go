@@ -46,7 +46,7 @@ func listHandler(cmd *cobra.Command, args []string) {
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 4, ' ', 0)
 	fmt.Fprintf(w, "STATUS\tSERVICE\tNAME\n")
 	for _, s := range status {
-		fmt.Fprintf(w, "%s\t%s\t%s\n", statusToText(s.status), s.service.Hash(), s.service.Name)
+		fmt.Fprintf(w, "%s\t%s\t%s\n", s.status.String(), s.service.Hash(), s.service.Name)
 	}
 	w.Flush()
 }
@@ -63,16 +63,4 @@ func servicesWithStatus(services []*service.Service) (status []serviceStatus, er
 		})
 	}
 	return
-}
-
-func statusToText(status service.StatusType) string {
-	switch status {
-	case service.STOPPED:
-		return "stopped"
-	case service.RUNNING:
-		return "running"
-	case service.PARTIAL:
-		return "partial"
-	}
-	panic("not reached")
 }
