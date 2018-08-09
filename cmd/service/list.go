@@ -3,8 +3,9 @@ package service
 import (
 	"context"
 	"fmt"
+	"os"
 	"sort"
-	"strings"
+	"text/tabwriter"
 
 	"github.com/mesg-foundation/core/api/core"
 	"github.com/mesg-foundation/core/cmd/utils"
@@ -15,20 +16,6 @@ import (
 type serviceStatus struct {
 	service *service.Service
 	status  service.StatusType
-}
-
-func (s serviceStatus) String() string {
-	statusText := map[service.StatusType]string{
-		service.STOPPED: "[Stopped]",
-		service.RUNNING: "[Running]",
-		service.PARTIAL: "[Partial]",
-	}
-	return strings.Join([]string{
-		"-",
-		statusText[s.status],
-		s.service.Hash(),
-		s.service.Name,
-	}, " ")
 }
 
 type byStatus []serviceStatus
@@ -55,9 +42,13 @@ func listHandler(cmd *cobra.Command, args []string) {
 	status, err := servicesWithStatus(reply.Services)
 	utils.HandleError(err)
 	sort.Sort(byStatus(status))
-	for _, serviceStatus := range status {
-		fmt.Println(serviceStatus)
+
+	w := tabwriter.NewWriter(os.Stdout, 0, 0, 4, ' ', 0)
+	fmt.Fprintf(w, "STATUS\tSERVICE\tNAME\n")
+	for _, s := range status {
+		fmt.Fprintf(w, "%s\t%s\t%s\n", statusToText(s.status), s.service.Hash(), s.service.Name)
 	}
+	w.Flush()
 }
 
 func servicesWithStatus(services []*service.Service) (status []serviceStatus, err error) {
@@ -72,4 +63,16 @@ func servicesWithStatus(services []*service.Service) (status []serviceStatus, er
 		})
 	}
 	return
+}
+
+func statusToText(status service.StatusType) string {
+	switch status {
+	case service.STOPPED:
+		return "stopped"
+	case service.RUNNING:
+		return "running"
+	case service.PARTIAL:
+		return "partial"
+	}
+	panic("not reached")
 }
