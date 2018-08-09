@@ -23,17 +23,20 @@ mesg-core service delete --all`,
 }
 
 func init() {
+	Delete.Flags().BoolP("force", "f", false, "Force stop of a service")
 	Delete.Flags().BoolP("all", "", false, "Delete all services")
 }
 
 func deleteHandler(cmd *cobra.Command, args []string) {
 	if cmd.Flag("all").Value.String() == "true" {
-		var confirmed bool
-		if survey.AskOne(&survey.Confirm{Message: "Are you sure to delete all services?"}, &confirmed, nil) != nil {
-			return
-		}
-		if confirmed == false {
-			return
+		if cmd.Flag("force").Value.String() == "false" {
+			var confirmed bool
+			if survey.AskOne(&survey.Confirm{Message: "Are you sure to delete all services?"}, &confirmed, nil) != nil {
+				return
+			}
+			if confirmed == false {
+				return
+			}
 		}
 		fmt.Println("Deleting all services...")
 		reply, err := cli().ListServices(context.Background(), &core.ListServicesRequest{})
