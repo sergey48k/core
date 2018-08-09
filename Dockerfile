@@ -9,7 +9,6 @@ RUN go get github.com/xeipuuv/gojsonschema && \
     go get github.com/spf13/viper && \
     go get github.com/spf13/cobra && \
     go get gopkg.in/AlecAivazis/survey.v1 && \
-    go get github.com/briandowns/spinner && \
     go get github.com/golang/protobuf/proto && \
     go get google.golang.org/grpc && \
     go get github.com/syndtr/goleveldb/leveldb && \

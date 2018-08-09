@@ -9,10 +9,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// Start the MESG Core.
+// Start the Core.
 var Start = &cobra.Command{
 	Use:               "start",
-	Short:             "Start the MESG Core",
+	Short:             "Start the Core",
 	Run:               startHandler,
 	DisableAutoGenTag: true,
 }
@@ -25,12 +25,11 @@ func startHandler(cmd *cobra.Command, args []string) {
 	status, err := daemon.Status()
 	utils.HandleError(err)
 	if status == container.RUNNING {
-		fmt.Println("MESG Core is running")
+		fmt.Println("Core is running")
 		return
 	}
-	utils.ShowSpinnerForFunc(utils.SpinnerOptions{Text: "Starting MESG Core..."}, func() {
-		_, err = daemon.Start()
-	})
+	fmt.Println("Starting Core...")
+	_, err = daemon.Start()
 	utils.HandleError(err)
-	fmt.Println("MESG Core is running")
+	fmt.Println("Core is running")
 }

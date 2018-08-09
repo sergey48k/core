@@ -59,18 +59,17 @@ func executeHandler(cmd *cobra.Command, args []string) {
 	utils.HandleError(err)
 
 	var execution *core.ResultData
-	utils.ShowSpinnerForFunc(utils.SpinnerOptions{Text: "Executing task " + taskKey + "..."}, func() {
-		// TODO: Fix this, it's a bit messy to have a sleep here
-		go func() {
-			time.Sleep(1 * time.Second)
-			_, err = executeTask(serviceID, taskKey, taskData)
-			utils.HandleError(err)
-		}()
-		for {
-			execution, err = stream.Recv()
-			break
-		}
-	})
+	fmt.Println("Executing task " + taskKey + "...")
+	// TODO: Fix this, it's a bit messy to have a sleep here
+	go func() {
+		time.Sleep(1 * time.Second)
+		_, err = executeTask(serviceID, taskKey, taskData)
+		utils.HandleError(err)
+	}()
+	for {
+		execution, err = stream.Recv()
+		break
+	}
 	utils.HandleError(err)
 	fmt.Println("Task " + taskKey + " returned output " + execution.OutputKey + " with data:")
 	fmt.Println(execution.OutputData)

@@ -65,7 +65,7 @@ func prepareService(path string) *service.Service {
 	importedService, err := importer.From(path)
 	handleValidationError(err)
 	utils.HandleError(err)
-	imageHash, err := buildDockerImage(path)
+	imageHash, err := defaultContainer.Build(path)
 	utils.HandleError(err)
 	fmt.Println("✔ Image built with success")
 	injectConfigurationInDependencies(importedService, imageHash)
@@ -100,21 +100,13 @@ func gitClone(repoURL string, path string, message string) error {
 		u.Fragment = ""
 	}
 	options.URL = u.String()
-	utils.ShowSpinnerForFunc(utils.SpinnerOptions{Text: message}, func() {
-		_, err = git.PlainClone(path, false, options)
-	})
+	fmt.Println(message)
+	_, err = git.PlainClone(path, false, options)
 	return err
 }
 
 func createTempFolder() (path string, err error) {
 	return ioutil.TempDir("", "mesg-")
-}
-
-func buildDockerImage(path string) (imageHash string, err error) {
-	utils.ShowSpinnerForFunc(utils.SpinnerOptions{Text: "Building image..."}, func() {
-		imageHash, err = defaultContainer.Build(path)
-	})
-	return
 }
 
 func injectConfigurationInDependencies(s *service.Service, imageHash string) {

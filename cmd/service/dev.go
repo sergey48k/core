@@ -40,11 +40,11 @@ func devHandler(cmd *cobra.Command, args []string) {
 
 	<-utils.WaitForCancel()
 
-	utils.ShowSpinnerForFunc(utils.SpinnerOptions{Text: "Deleting test service..."}, func() {
-		cli().DeleteService(context.Background(), &core.DeleteServiceRequest{ // Delete service. This will automatically stop the service too
-			ServiceID: serviceID,
-		})
+	fmt.Println("Deleting test service...")
+	_, err = cli().DeleteService(context.Background(), &core.DeleteServiceRequest{
+		ServiceID: serviceID,
 	})
+	utils.HandleError(err)
 }
 
 func createService(path string) (string, error) {
@@ -55,10 +55,8 @@ func createService(path string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	utils.ShowSpinnerForFunc(utils.SpinnerOptions{Text: "Starting service..."}, func() {
-		_, err = cli().StartService(context.Background(), &core.StartServiceRequest{
-			ServiceID: deployment.ServiceID,
-		})
+	_, err = cli().StartService(context.Background(), &core.StartServiceRequest{
+		ServiceID: deployment.ServiceID,
 	})
 	return deployment.ServiceID, err
 }

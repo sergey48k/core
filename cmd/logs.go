@@ -14,7 +14,7 @@ import (
 // Logs of the core.
 var Logs = &cobra.Command{
 	Use:               "logs",
-	Short:             "Show the MESG Core's logs",
+	Short:             "Show the Core's logs",
 	Run:               logsHandler,
 	DisableAutoGenTag: true,
 }
@@ -27,7 +27,7 @@ func logsHandler(cmd *cobra.Command, args []string) {
 	status, err := daemon.Status()
 	utils.HandleError(err)
 	if status == container.STOPPED {
-		fmt.Println("MESG Core is stopped")
+		fmt.Println("Core is stopped")
 		return
 	}
 	reader, err := daemon.Logs()
