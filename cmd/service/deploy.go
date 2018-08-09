@@ -12,9 +12,8 @@ import (
 
 // Deploy a service to the marketplace.
 var Deploy = &cobra.Command{
-	Use:     "deploy",
-	Aliases: []string{"publish"},
-	Short:   "Deploy a service",
+	Use:   "deploy",
+	Short: "Deploy a service",
 	Long: `Deploy a service.
 
 To get more information, see the [deploy page from the documentation](https://docs.mesg.com/guide/service/deploy-a-service.html)`,
