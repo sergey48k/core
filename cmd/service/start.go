@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/logrusorgru/aurora"
 	"github.com/mesg-foundation/core/api/core"
 	"github.com/mesg-foundation/core/cmd/utils"
 	"github.com/spf13/cobra"
@@ -32,5 +31,5 @@ func startHandler(cmd *cobra.Command, args []string) {
 		})
 	})
 	utils.HandleError(err)
-	fmt.Println(aurora.Green("Service is running"))
+	fmt.Println("Service is running")
 }

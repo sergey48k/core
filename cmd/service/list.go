@@ -6,7 +6,6 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/logrusorgru/aurora"
 	"github.com/mesg-foundation/core/api/core"
 	"github.com/mesg-foundation/core/cmd/utils"
 	"github.com/mesg-foundation/core/service"
@@ -19,15 +18,15 @@ type serviceStatus struct {
 }
 
 func (s serviceStatus) String() string {
-	statusText := map[service.StatusType]aurora.Value{
-		service.STOPPED: aurora.Red("[Stopped]"),
-		service.RUNNING: aurora.Green("[Running]"),
-		service.PARTIAL: aurora.Brown("[Partial]"),
+	statusText := map[service.StatusType]string{
+		service.STOPPED: "[Stopped]",
+		service.RUNNING: "[Running]",
+		service.PARTIAL: "[Partial]",
 	}
 	return strings.Join([]string{
 		"-",
-		statusText[s.status].String(),
-		aurora.Bold(s.service.Hash()).String(),
+		statusText[s.status],
+		s.service.Hash(),
 		s.service.Name,
 	}, " ")
 }

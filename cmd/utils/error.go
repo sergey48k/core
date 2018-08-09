@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"github.com/docker/docker/client"
-	"github.com/logrusorgru/aurora"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -28,11 +27,11 @@ func HandleError(err error) {
 func errorMessage(err error) string {
 	switch {
 	case coreConnectionError(err):
-		return aurora.Sprintf("%s\n%s", aurora.Red(cannotReachTheCore), startCore)
+		return fmt.Sprintf("%s\n%s", cannotReachTheCore, startCore)
 	case dockerDaemonError(err):
-		return aurora.Sprintf("%s\n%s", aurora.Red(cannotReachDocker), installDocker)
+		return fmt.Sprintf("%s\n%s", cannotReachDocker, installDocker)
 	default:
-		return aurora.Red(err.Error()).String()
+		return err.Error()
 	}
 }
 

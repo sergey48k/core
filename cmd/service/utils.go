@@ -8,7 +8,6 @@ import (
 	"os"
 
 	"github.com/asaskevich/govalidator"
-	"github.com/logrusorgru/aurora"
 	"github.com/mesg-foundation/core/api/core"
 	"github.com/mesg-foundation/core/cmd/utils"
 	"github.com/mesg-foundation/core/config"
@@ -49,7 +48,7 @@ func defaultPath(args []string) string {
 
 func handleValidationError(err error) {
 	if _, ok := err.(*importer.ValidationError); ok {
-		fmt.Println(aurora.Red(err))
+		fmt.Println(err)
 		fmt.Println("Run the command 'service validate' for more details")
 		os.Exit(0)
 	}
@@ -61,14 +60,14 @@ func prepareService(path string) *service.Service {
 	utils.HandleError(err)
 	if didDownload {
 		defer os.RemoveAll(path)
-		fmt.Printf("%s Service downloaded with success\n", aurora.Green("✔"))
+		fmt.Println("✔ Service downloaded with success")
 	}
 	importedService, err := importer.From(path)
 	handleValidationError(err)
 	utils.HandleError(err)
 	imageHash, err := buildDockerImage(path)
 	utils.HandleError(err)
-	fmt.Printf("%s Image built with success\n", aurora.Green("✔"))
+	fmt.Println("✔ Image built with success")
 	injectConfigurationInDependencies(importedService, imageHash)
 	return importedService
 }

@@ -6,7 +6,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/logrusorgru/aurora"
 	"github.com/mesg-foundation/core/cmd/service/assets"
 	"github.com/mesg-foundation/core/cmd/utils"
 	"github.com/mesg-foundation/core/service/importer"
@@ -52,5 +51,5 @@ func genDocHandler(cmd *cobra.Command, args []string) {
 	err = tmpl.Execute(f, service)
 	utils.HandleError(err)
 
-	fmt.Println(aurora.Green("File README.md generated with success"))
+	fmt.Println("File README.md generated with success")
 }

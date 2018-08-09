@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/logrusorgru/aurora"
 	"github.com/mesg-foundation/core/api/core"
 	"github.com/mesg-foundation/core/cmd/utils"
 	"github.com/spf13/cobra"
@@ -28,6 +27,6 @@ func deployHandler(cmd *cobra.Command, args []string) {
 		Service: service,
 	})
 	utils.HandleError(err)
-	fmt.Println("Service deployed with ID:", aurora.Green(reply.ServiceID))
+	fmt.Println("Service deployed with ID:", reply.ServiceID)
 	fmt.Println("To start it, run the command: mesg-core service start " + reply.ServiceID)
 }

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/logrusorgru/aurora"
 	"github.com/mesg-foundation/core/api/core"
 	"github.com/mesg-foundation/core/cmd/utils"
 	"github.com/spf13/cobra"
@@ -30,8 +29,8 @@ func init() {
 func devHandler(cmd *cobra.Command, args []string) {
 	serviceID, err := createService(defaultPath(args))
 	utils.HandleError(err)
-	fmt.Printf("%s Service started with success\n", aurora.Green("✔"))
-	fmt.Printf("Service ID: %s\n", aurora.Bold(serviceID))
+	fmt.Printf("✔ Service started with success\n")
+	fmt.Printf("Service ID: %s\n", serviceID)
 
 	go listenEvents(serviceID, cmd.Flag("event-filter").Value.String())
 	go listenResults(serviceID, cmd.Flag("task-filter").Value.String(), cmd.Flag("output-filter").Value.String())
@@ -70,14 +69,14 @@ func listenEvents(serviceID string, filter string) {
 		EventFilter: filter,
 	})
 	utils.HandleError(err)
-	fmt.Println(aurora.Cyan("Listening for events from the service..."))
+	fmt.Println("Listening for events from the service...")
 	for {
 		event, err := stream.Recv()
 		if err != nil {
-			log.Println(aurora.Red(err))
+			log.Println(err)
 			return
 		}
-		log.Println("Receive event", aurora.Green(event.EventKey), ":", aurora.Bold(event.EventData))
+		log.Println("Receive event", event.EventKey, ":", event.EventData)
 	}
 }
 
@@ -88,13 +87,13 @@ func listenResults(serviceID string, result string, output string) {
 		OutputFilter: output,
 	})
 	utils.HandleError(err)
-	fmt.Println(aurora.Cyan("Listening for results from the service..."))
+	fmt.Println("Listening for results from the service...")
 	for {
 		result, err := stream.Recv()
 		if err != nil {
-			log.Println(aurora.Red(err))
+			log.Println(err)
 			return
 		}
-		log.Println("Receive result", aurora.Green(result.TaskKey), aurora.Cyan(result.OutputKey), "with data", aurora.Bold(result.OutputData))
+		log.Println("Receive result", result.TaskKey, result.OutputKey, "with data", result.OutputData)
 	}
 }

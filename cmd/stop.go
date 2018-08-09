@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/logrusorgru/aurora"
 	"github.com/mesg-foundation/core/api/core"
 	"github.com/mesg-foundation/core/cmd/utils"
 	"github.com/mesg-foundation/core/config"
@@ -38,7 +37,7 @@ func stopHandler(cmd *cobra.Command, args []string) {
 		err = daemon.Stop()
 	})
 	utils.HandleError(err)
-	fmt.Println(aurora.Green("MESG Core stopped"))
+	fmt.Println("MESG Core stopped")
 }
 
 func getCli() (cli core.CoreClient, err error) {

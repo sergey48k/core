@@ -9,7 +9,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/logrusorgru/aurora"
 	"github.com/mesg-foundation/core/cmd/utils"
 	"github.com/spf13/cobra"
 	"gopkg.in/AlecAivazis/survey.v1"
@@ -46,7 +45,7 @@ func init() {
 }
 
 func initHandler(cmd *cobra.Command, args []string) {
-	fmt.Printf("%s\n", aurora.Bold("Initialization of a new service"))
+	fmt.Println("Initialization of a new service")
 
 	tmpl := &templateStruct{
 		URL:  cmd.Flag("template").Value.String(),
@@ -71,7 +70,7 @@ func initHandler(cmd *cobra.Command, args []string) {
 	}
 	err = copyDir(path+"/template", folder, replacements)
 	utils.HandleError(err)
-	fmt.Println(aurora.Green("Service created in folder: " + folder))
+	fmt.Println("Service created in folder: " + folder)
 }
 
 func getTemplates(url string) ([]*templateStruct, error) {
@@ -117,7 +116,7 @@ func templatesToOption(templates []*templateStruct) (options []string) {
 
 func getTemplateResult(result string, templates []*templateStruct) (tmpl *templateStruct) {
 	if result == addMyOwn {
-		fmt.Println(aurora.Green("You can create and add your own template to this list. Go to the Awesome Github to see how: https://github.com/mesg-foundation/awesome"))
+		fmt.Println("You can create and add your own template to this list. Go to the Awesome Github to see how: https://github.com/mesg-foundation/awesome")
 		return
 	}
 	if result == custom {

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/logrusorgru/aurora"
 	"github.com/mesg-foundation/core/api/core"
 	"github.com/mesg-foundation/core/cmd/utils"
 	"github.com/spf13/cobra"
@@ -51,7 +50,7 @@ func deleteHandler(cmd *cobra.Command, args []string) {
 		}
 	}
 	if len(args) == 0 {
-		fmt.Println(aurora.Red("No provided service ID. See help with flag --help"))
+		fmt.Println("No provided service ID. See help with flag --help")
 	}
 	for i := range args {
 		_, err := cli().DeleteService(context.Background(), &core.DeleteServiceRequest{

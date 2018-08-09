@@ -3,7 +3,6 @@ RUN mkdir -p src/github.com/mesg-foundation/core
 RUN go get github.com/xeipuuv/gojsonschema && \
     go get gopkg.in/yaml.v2 && \
     go get github.com/stvp/assert && \
-    go get github.com/logrusorgru/aurora && \
     go get github.com/docker/docker/api/types/swarm && \
     go get github.com/docker/docker/api/types/mount && \
     go get github.com/docker/docker/client && \

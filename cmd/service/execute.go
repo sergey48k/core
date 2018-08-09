@@ -9,7 +9,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/logrusorgru/aurora"
 	"github.com/mesg-foundation/core/api/core"
 	"github.com/mesg-foundation/core/cmd/utils"
 	"github.com/mesg-foundation/core/service"
@@ -60,7 +59,7 @@ func executeHandler(cmd *cobra.Command, args []string) {
 	utils.HandleError(err)
 
 	var execution *core.ResultData
-	utils.ShowSpinnerForFunc(utils.SpinnerOptions{Text: "Executing task " + aurora.Green(taskKey).String() + "..."}, func() {
+	utils.ShowSpinnerForFunc(utils.SpinnerOptions{Text: "Executing task " + taskKey + "..."}, func() {
 		// TODO: Fix this, it's a bit messy to have a sleep here
 		go func() {
 			time.Sleep(1 * time.Second)
@@ -73,8 +72,8 @@ func executeHandler(cmd *cobra.Command, args []string) {
 		}
 	})
 	utils.HandleError(err)
-	fmt.Println("Task " + aurora.Green(taskKey).String() + " returned output " + aurora.Blue(execution.OutputKey).String() + " with data:")
-	fmt.Println(aurora.Bold(execution.OutputData).String())
+	fmt.Println("Task " + taskKey + " returned output " + execution.OutputKey + " with data:")
+	fmt.Println(execution.OutputData)
 }
 
 func executeTask(serviceID string, task string, data string) (execution *core.ExecuteTaskReply, err error) {
