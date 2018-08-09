@@ -2,6 +2,7 @@ package service
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -62,8 +63,15 @@ func initHandler(cmd *cobra.Command, args []string) {
 	}
 	path, err := downloadTemplate(tmpl)
 	utils.HandleError(err)
-	defer os.RemoveAll(path)
-	replacements := askReplacements(cmd)
+	clean := getCleanUp(path)
+	defer clean()
+
+	replacements, err := askReplacements(cmd)
+	if err != nil {
+		clean()
+		os.Exit(1)
+	}
+
 	folder := strings.Replace(strings.ToLower(replacements["name"]), " ", "-", -1)
 	if cmd.Flag("current").Value.String() == "true" {
 		folder = "./"
@@ -71,6 +79,16 @@ func initHandler(cmd *cobra.Command, args []string) {
 	err = copyDir(path+"/template", folder, replacements)
 	utils.HandleError(err)
 	fmt.Println("Service created in folder: " + folder)
+}
+
+func getCleanUp(path string) func() {
+	abort := utils.WaitForCancel()
+	go func() {
+		<-abort
+		os.RemoveAll(path)
+		os.Exit(1)
+	}()
+	return func() { os.RemoveAll(path) }
 }
 
 func getTemplates(url string) ([]*templateStruct, error) {
@@ -147,21 +165,30 @@ func downloadTemplate(tmpl *templateStruct) (path string, err error) {
 	return path, gitClone(tmpl.URL, path, "Downloading template "+tmpl.Name+"...")
 }
 
-func ask(label string, value string, validator survey.Validator) string {
+func ask(label string, value string, validator survey.Validator) (string, error) {
 	if value != "" {
-		return value
+		return value, nil
 	}
 	if survey.AskOne(&survey.Input{Message: label}, &value, validator) != nil {
-		os.Exit(0)
+		return "", errors.New("not set")
 	}
-	return value
+	return value, nil
 }
 
-func askReplacements(cmd *cobra.Command) (replacement map[string]string) {
-	replacement = make(map[string]string)
-	replacement["name"] = ask("Name:", cmd.Flag("name").Value.String(), survey.Required)
-	replacement["description"] = ask("Description:", cmd.Flag("description").Value.String(), nil)
-	return
+func askReplacements(cmd *cobra.Command) (map[string]string, error) {
+	replacement := make(map[string]string)
+	name, err := ask("Name:", cmd.Flag("name").Value.String(), survey.Required)
+	if err != nil {
+		return nil, err
+	}
+	replacement["name"] = name
+
+	description, err := ask("Description:", cmd.Flag("description").Value.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+	replacement["description"] = description
+	return replacement, nil
 }
 
 func copyDir(src string, dst string, replacement map[string]string) (err error) {
