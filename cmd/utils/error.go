@@ -19,7 +19,7 @@ const (
 // HandleError displays the error and stops the process if the error exists
 func HandleError(err error) {
 	if err != nil {
-		fmt.Println(errorMessage(err))
+		fmt.Fprintln(os.Stderr, errorMessage(err))
 		os.Exit(1)
 	}
 }
