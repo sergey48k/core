@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/logrusorgru/aurora"
 	"github.com/mesg-foundation/core/api/core"
@@ -52,14 +53,14 @@ func deleteHandler(cmd *cobra.Command, args []string) {
 	if len(args) == 0 {
 		fmt.Println(aurora.Red("No provided service ID. See help with flag --help"))
 	}
-	for _, arg := range args {
-		var err error
-		utils.ShowSpinnerForFunc(utils.SpinnerOptions{Text: "Deleting service " + arg + "..."}, func() {
-			_, err = cli().DeleteService(context.Background(), &core.DeleteServiceRequest{
-				ServiceID: arg,
-			})
+	for i := range args {
+		_, err := cli().DeleteService(context.Background(), &core.DeleteServiceRequest{
+			ServiceID: args[i],
 		})
-		utils.HandleError(err)
-		fmt.Println("Service", arg, "deleted")
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+		} else {
+			fmt.Println(args[i])
+		}
 	}
 }
