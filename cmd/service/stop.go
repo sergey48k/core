@@ -3,10 +3,9 @@ package service
 import (
 	"context"
 	"fmt"
+	"os"
 
-	"github.com/logrusorgru/aurora"
 	"github.com/mesg-foundation/core/api/core"
-	"github.com/mesg-foundation/core/cmd/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -22,15 +21,17 @@ To have more explanation, see the page [stake explanation from the documentation
 	Example:           `mesg-core service stop SERVICE_ID`,
 	Run:               stopHandler,
 	DisableAutoGenTag: true,
+	Args:              cobra.MinimumNArgs(1),
 }
 
 func stopHandler(cmd *cobra.Command, args []string) {
-	var err error
-	utils.ShowSpinnerForFunc(utils.SpinnerOptions{Text: "Stopping service..."}, func() {
-		_, err = cli().StopService(context.Background(), &core.StopServiceRequest{
-			ServiceID: args[0],
-		})
-	})
-	utils.HandleError(err)
-	fmt.Println(aurora.Green("Service stopped"))
+	stop := cli().StopService
+	for i := range args {
+		_, err := stop(context.Background(), &core.StopServiceRequest{ServiceID: args[i]})
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+		} else {
+			fmt.Println(args[i])
+		}
+	}
 }
