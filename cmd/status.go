@@ -3,31 +3,38 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/mesg-foundation/core/cmd/utils"
 	"github.com/mesg-foundation/core/container"
 	"github.com/mesg-foundation/core/daemon"
 	"github.com/spf13/cobra"
 )
 
-// Status command returns started services
-var Status = &cobra.Command{
-	Use:               "status",
-	Short:             "Status of the Core",
-	Run:               statusHandler,
-	DisableAutoGenTag: true,
-}
+type statusCmd struct{}
 
-func init() {
-	RootCmd.AddCommand(Status)
-}
+func newstatusCmd() *cobra.Command {
+	c := &statusCmd{}
 
-func statusHandler(cmd *cobra.Command, args []string) {
-	// TODO: should improve this function with a waitFor
-	status, err := daemon.Status()
-	utils.HandleError(err)
-	if status == container.RUNNING {
-		fmt.Println("Core is running")
-	} else {
-		fmt.Println("Core is stopped")
+	cmd := &cobra.Command{
+		Use:               "status",
+		Short:             "Print status of the Core",
+		RunE:              c.runE,
+		DisableAutoGenTag: true,
 	}
+	return cmd
+}
+
+func (*statusCmd) runE(cmd *cobra.Command, args []string) error {
+	status, err := daemon.Status()
+	if err != nil {
+		return err
+	}
+
+	switch status {
+	case container.RUNNING:
+		fmt.Println("Core status: running")
+	case container.STOPPED:
+		fmt.Println("Core status: stopped")
+	default:
+		fmt.Println("Core status:", status)
+	}
+	return nil
 }

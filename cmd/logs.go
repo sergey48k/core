@@ -5,33 +5,43 @@ import (
 	"os"
 
 	"github.com/docker/docker/pkg/stdcopy"
-	"github.com/mesg-foundation/core/cmd/utils"
 	"github.com/mesg-foundation/core/container"
 	"github.com/mesg-foundation/core/daemon"
 	"github.com/spf13/cobra"
 )
 
-// Logs of the core.
-var Logs = &cobra.Command{
-	Use:               "logs",
-	Short:             "Show the Core's logs",
-	Run:               logsHandler,
-	DisableAutoGenTag: true,
+type logsCmd struct{}
+
+func newLogsCmd() *cobra.Command {
+	c := &logsCmd{}
+
+	cmd := &cobra.Command{
+		Use:               "logs",
+		Short:             "Show the Core's logs",
+		RunE:              c.runE,
+		DisableAutoGenTag: true,
+	}
+
+	return cmd
 }
 
-func init() {
-	RootCmd.AddCommand(Logs)
-}
-
-func logsHandler(cmd *cobra.Command, args []string) {
+func (*logsCmd) runE(cmd *cobra.Command, args []string) error {
 	status, err := daemon.Status()
-	utils.HandleError(err)
+	if err != nil {
+		return err
+	}
+
 	if status == container.STOPPED {
 		fmt.Println("Core is stopped")
-		return
+		return nil
 	}
+
 	reader, err := daemon.Logs()
+	if err != nil {
+		return err
+	}
 	defer reader.Close()
-	utils.HandleError(err)
-	stdcopy.StdCopy(os.Stdout, os.Stderr, reader)
+
+	_, err = stdcopy.StdCopy(os.Stdout, os.Stderr, reader)
+	return err
 }

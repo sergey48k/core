@@ -3,33 +3,42 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/mesg-foundation/core/cmd/utils"
 	"github.com/mesg-foundation/core/container"
 	"github.com/mesg-foundation/core/daemon"
 	"github.com/spf13/cobra"
 )
 
-// Start the Core.
-var Start = &cobra.Command{
-	Use:               "start",
-	Short:             "Start the Core",
-	Run:               startHandler,
-	DisableAutoGenTag: true,
+type startCmd struct{}
+
+func newstartCmd() *cobra.Command {
+	c := &startCmd{}
+
+	cmd := &cobra.Command{
+		Use:               "start",
+		Short:             "Start the core",
+		RunE:              c.runE,
+		DisableAutoGenTag: true,
+	}
+	return cmd
 }
 
-func init() {
-	RootCmd.AddCommand(Start)
-}
-
-func startHandler(cmd *cobra.Command, args []string) {
+func (*startCmd) runE(cmd *cobra.Command, args []string) error {
 	status, err := daemon.Status()
-	utils.HandleError(err)
+	if err != nil {
+		return err
+	}
+
 	if status == container.RUNNING {
 		fmt.Println("Core is running")
-		return
+		return nil
 	}
+
 	fmt.Println("Starting Core...")
 	_, err = daemon.Start()
-	utils.HandleError(err)
+	if err != nil {
+		return err
+	}
+
 	fmt.Println("Core is running")
+	return nil
 }

@@ -23,10 +23,6 @@ var Stop = &cobra.Command{
 	DisableAutoGenTag: true,
 }
 
-func init() {
-	RootCmd.AddCommand(Stop)
-}
-
 func stopHandler(cmd *cobra.Command, args []string) {
 	fmt.Println("Stopping Core...")
 	err := stopServices()
