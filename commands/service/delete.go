@@ -1,0 +1,65 @@
+package service
+
+import (
+	"errors"
+	"fmt"
+	"os"
+
+	"github.com/spf13/cobra"
+	survey "gopkg.in/AlecAivazis/survey.v1"
+)
+
+type deleteCmd struct {
+	all   bool
+	force bool
+
+	e ServiceExecutor
+}
+
+func newDeleteCmd(e ServiceExecutor) *cobra.Command {
+	c := deleteCmd{e: e}
+	cmd := &cobra.Command{
+		Use:   "delete",
+		Short: "Delete one or many services",
+		Example: `mesg-core service delete SERVICE_ID [SERVICE_ID...]
+mesg-core service delete --all`,
+		RunE:              c.runE,
+		DisableAutoGenTag: true,
+	}
+
+	cmd.Flags().BoolVar(&c.all, "all", false, "Delete all services")
+	cmd.Flags().BoolVarP(&c.force, "force", "f", false, "Force delete all services")
+}
+
+func (c *deleteCmd) runE(cmd *cobra.Command, args []string) error {
+	if len(args) == 0 && !c.all {
+		return errors.New("at least one service id must be provided (or run with --all flag)")
+	}
+
+	if c.all && !c.force {
+		if survey.AskOne(&survey.Confirm{Message: "Are you sure to delete all services?"}, &c.force) != nil {
+			return nil
+		}
+		// is still no confirm return.
+		if !c.force {
+			return nil
+		}
+	}
+
+	if c.all {
+		if err := e.DeleteAll(); err != nil {
+			return err
+		}
+		fmt.Println("All services are deleted")
+		return nil
+	}
+
+	for _, arg := range args {
+		if err := e.Delete(arg); err != nil {
+			fmt.Fprintln(os.Stderr, "Can't delete %s service: %s", arg, err)
+		} else {
+			fmt.Println("Service", arg, "deleted")
+		}
+	}
+	return nil
+}
