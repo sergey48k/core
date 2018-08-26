@@ -9,16 +9,18 @@ import (
 )
 
 type stopCmd struct {
+	baseCmd
 	e RootExecutor
 }
 
-func newStopCmd(e RootExecutor) *cobra.Command {
+func newStopCmd(e RootExecutor) *stopCmd {
 	c := &stopCmd{e: e}
-	return newCommand(&cobra.Command{
+	c.cmd = newCommand(&cobra.Command{
 		Use:   "stop",
 		Short: "Stop the MESG Core",
 		RunE:  c.runE,
 	})
+	return c
 }
 
 func (c *stopCmd) runE(cmd *cobra.Command, args []string) error {

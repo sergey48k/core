@@ -11,19 +11,19 @@ func newRootCmd(e ServiceExecutor) *cobra.Command {
 	}
 
 	cmd.AddCommand(
-		newDeployCmd(e),
-		newValidateCmd(e),
-		newTestCmd(e),
-		newStartCmd(e),
-		newStopCmd(e),
-		newDetailCmd(e),
-		newListCmd(e),
-		newInitCmd(e),
-		newDeleteCmd(e),
-		newLogsCmd(e),
-		newDocsCmd(e),
-		newDevCmd(e),
-		newExecuteCmd(e),
+	// newDeployCmd(e),
+	// newValidateCmd(e),
+	// newTestCmd(e),
+	// newStartCmd(e),
+	// newStopCmd(e),
+	// newDetailCmd(e),
+	// newListCmd(e),
+	// newInitCmd(e),
+	// newDeleteCmd(e),
+	// newLogsCmd(e),
+	// newDocsCmd(e),
+	// newDevCmd(e),
+	// newExecuteCmd(e),
 	)
 	return cmd
 }

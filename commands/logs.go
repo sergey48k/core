@@ -5,21 +5,25 @@ import (
 	"os"
 
 	"github.com/docker/docker/pkg/stdcopy"
+	"github.com/krhubert/core/container"
 	"github.com/logrusorgru/aurora"
 	"github.com/spf13/cobra"
 )
 
 type logsCmd struct {
+	baseCmd
+
 	e RootExecutor
 }
 
-func newLogsCmd(e RootExecutor) *cobra.Command {
+func newLogsCmd(e RootExecutor) *logsCmd {
 	c := &logsCmd{e: e}
-	return newCommand(&cobra.Command{
+	c.cmd = newCommand(&cobra.Command{
 		Use:   "logs",
 		Short: "Show the MESG Core's logs",
 		RunE:  c.runE,
 	})
+	return c
 }
 
 func (c *logsCmd) runE(cmd *cobra.Command, args []string) error {
@@ -28,7 +32,7 @@ func (c *logsCmd) runE(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	if status == STOPPED {
+	if status == container.STOPPED {
 		fmt.Println(aurora.Brown("MESG Core is stopped"))
 		return nil
 	}
@@ -39,6 +43,6 @@ func (c *logsCmd) runE(cmd *cobra.Command, args []string) error {
 	}
 	defer reader.Close()
 
-	stdcopy.StdCopy(os.Stdout, os.Stderr, reader)
-	return nil
+	_, err = stdcopy.StdCopy(os.Stdout, os.Stderr, reader)
+	return err
 }

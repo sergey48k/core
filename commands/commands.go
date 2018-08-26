@@ -3,20 +3,14 @@ package commands
 import (
 	"io"
 
+	"github.com/krhubert/core/container"
 	"github.com/spf13/cobra"
-)
-
-type StatusType uint
-
-const (
-	STOPPED StatusType = 0
-	RUNNING StatusType = 1
 )
 
 type RootExecutor interface {
 	Start() error
 	Stop() error
-	Status() (StatusType, error)
+	Status() (container.StatusType, error)
 	Logs() (io.ReadCloser, error)
 }
 
@@ -29,6 +23,11 @@ func Build(e Executor) *cobra.Command {
 	return newRootCmd(e)
 }
 
+type baseCmd struct {
+	cmd *cobra.Command
+}
+
+// newCommand set default options for given command.
 func newCommand(c *cobra.Command) *cobra.Command {
 	c.DisableAutoGenTag = true
 	return c

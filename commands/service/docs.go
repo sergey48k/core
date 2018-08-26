@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 
 	"github.com/logrusorgru/aurora"
-	"github.com/mesg-foundation/core/cmd/service/assets"
-	"github.com/mesg-foundation/core/cmd/utils"
+	"github.com/mesg-foundation/core/commands/service/assets"
+	"github.com/mesg-foundation/core/commands/utils"
 	"github.com/mesg-foundation/core/service/importer"
 	"github.com/spf13/cobra"
 	survey "gopkg.in/AlecAivazis/survey.v1"

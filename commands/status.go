@@ -3,21 +3,25 @@ package commands
 import (
 	"fmt"
 
+	"github.com/krhubert/core/container"
 	"github.com/logrusorgru/aurora"
 	"github.com/spf13/cobra"
 )
 
 type statusCmd struct {
+	baseCmd
+
 	e RootExecutor
 }
 
-func newStatusCmd(e RootExecutor) *cobra.Command {
+func newStatusCmd(e RootExecutor) *statusCmd {
 	c := &statusCmd{e: e}
-	return newCommand(&cobra.Command{
+	c.cmd = newCommand(&cobra.Command{
 		Use:   "status",
 		Short: "Status of the MESG Core",
 		RunE:  c.runE,
 	})
+	return c
 }
 
 func (c *statusCmd) runE(cmd *cobra.Command, args []string) error {
@@ -27,7 +31,7 @@ func (c *statusCmd) runE(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	if status == RUNNING {
+	if status == container.RUNNING {
 		fmt.Println(aurora.Green("MESG Core is running"))
 	} else {
 		fmt.Println(aurora.Brown("MESG Core is stopped"))

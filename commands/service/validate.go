@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/logrusorgru/aurora"
-	"github.com/mesg-foundation/core/cmd/utils"
+	"github.com/mesg-foundation/core/commands/utils"
 	"github.com/mesg-foundation/core/service/importer"
 	"github.com/spf13/cobra"
 )

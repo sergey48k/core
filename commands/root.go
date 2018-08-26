@@ -11,10 +11,10 @@ func newRootCmd(e Executor) *cobra.Command {
 	})
 
 	cmd.AddCommand(
-		newStartCmd(e),
-		newStatusCmd(e),
-		newStopCmd(e),
-		newLogsCmd(e),
+		newStartCmd(e).cmd,
+		newStatusCmd(e).cmd,
+		newStopCmd(e).cmd,
+		newLogsCmd(e).cmd,
 		// TODO(uncomment): service.Build(e),
 	)
 	return cmd

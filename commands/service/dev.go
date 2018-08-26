@@ -7,7 +7,7 @@ import (
 
 	"github.com/logrusorgru/aurora"
 	"github.com/mesg-foundation/core/api/core"
-	"github.com/mesg-foundation/core/cmd/utils"
+	"github.com/mesg-foundation/core/commands/utils"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -51,6 +51,8 @@ func devHandler(cmd *cobra.Command, args []string) {
 		})
 	})
 }
+
+func deployService(p string) (string, bool, error) { return "", false, nil }
 
 func createService(path string) (serviceID string, isValid bool, err error) {
 	serviceID, isValid, err = deployService(path)

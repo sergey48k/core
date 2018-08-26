@@ -12,7 +12,7 @@ type deployCmd struct {
 	e ServiceExecutor
 }
 
-func newDeployCmd(e ServiceExecutor) cobra.Command {
+func newDeployCmd(e ServiceExecutor) *cobra.Command {
 	c := &deployCmd{e: e}
 	return &cobra.Command{
 		Use:   "deploy",
@@ -40,7 +40,7 @@ func (c *deployCmd) runE(cmd *cobra.Command, args []string) error {
 		return errors.New("service is not valid")
 	}
 
-	fmt.Println("Service deployed with ID:", aurora.Green(serviceID))
-	fmt.Printf("To start it, run the command: mesg-core service start %s\n", serviceID)
+	fmt.Println("Service deployed with ID:", aurora.Green(id))
+	fmt.Printf("To start it, run the command: mesg-core service start %s\n", id)
 	return nil
 }
