@@ -1,36 +1,35 @@
 package commands
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/logrusorgru/aurora"
-	"github.com/mesg-foundation/core/api/core"
-	"github.com/mesg-foundation/core/commands/utils"
 	"github.com/spf13/cobra"
 )
 
-var stake float64
-var duration int
+type serviceStartCmd struct {
+	baseCmd
 
-// Start run the start command for a service.
-var Start = &cobra.Command{
-	Use:               "start SERVICE_ID",
-	Short:             "Start a service",
-	Long:              "Start a service from the published available services. You have to provide a stake value and duration.",
-	Example:           `mesg-core service start SERVICE_ID`,
-	Args:              cobra.MinimumNArgs(1),
-	Run:               startHandler,
-	DisableAutoGenTag: true,
+	e ServiceExecutor
 }
 
-func startHandler(cmd *cobra.Command, args []string) {
-	var err error
-	utils.ShowSpinnerForFunc(utils.SpinnerOptions{Text: "Starting service..."}, func() {
-		_, err = cli().StartService(context.Background(), &core.StartServiceRequest{
-			ServiceID: args[0],
-		})
+func newServiceStartCmd(e ServiceExecutor) *serviceStartCmd {
+	c := &serviceStartCmd{e: e}
+	c.cmd = newCommand(&cobra.Command{
+		Use:     "start SERVICE",
+		Short:   "Start a service",
+		Long:    "Start a service from the published available services. You have to provide a stake value and duration.",
+		Example: `mesg-core service start SERVICE_ID`,
+		Args:    cobra.ExactArgs(1),
+		RunE:    c.runE,
 	})
-	utils.HandleError(err)
+	return c
+}
+
+func (c *serviceStartCmd) runE(cmd *cobra.Command, args []string) error {
+	if err := c.e.ServiceStart(args[0]); err != nil {
+		return err
+	}
 	fmt.Println(aurora.Green("Service is running"))
+	return nil
 }

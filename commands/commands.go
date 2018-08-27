@@ -23,8 +23,14 @@ type ServiceExecutor interface {
 	ServiceDeploy(path string) (id string, valid bool, err error)
 	ServiceDetail(id string) (*service.Service, error)
 	ServiceDev(path, eventFilter, taskFilter, outputFilter string) (id string, listeEvents chan core.EventData, listenResults chan core.ResultData, err error)
-	ServiceLogs(ids ...string) (io.ReadCloser, error)
+	ServiceLogs(id string) (io.ReadCloser, error)
+	ServiceDependencyLogs(id string, dependency string) ([]io.ReadCloser, error)
 	ServiceExeucteTask(id, taskKey, inputData string, tags []string) (listenResults chan core.ResultData, err error)
+
+	ServiceStart(id string) error
+	ServiceStop(id string) error
+	ServiceValidate(path string) error
+	ServiceGenerateDocs(path string) error
 }
 
 type Executor interface {

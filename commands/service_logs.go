@@ -1,49 +1,54 @@
 package commands
 
 import (
-	"context"
 	"os"
 
 	"github.com/docker/docker/pkg/stdcopy"
-	"github.com/mesg-foundation/core/api/core"
 	"github.com/mesg-foundation/core/commands/utils"
 	"github.com/spf13/cobra"
 )
 
-// Logs of the core
-var Logs = &cobra.Command{
-	Use:   "logs",
-	Short: "Show the logs of a service",
-	Example: `mesg-core service logs SERVICE_ID
-mesg-core service logs SERVICE_ID --dependency DEPENDENCY_NAME`,
-	Run:               logsHandler,
-	Args:              cobra.MinimumNArgs(1),
-	DisableAutoGenTag: true,
+type serviceLogsCmd struct {
+	baseCmd
+
+	dependency string
+
+	e ServiceExecutor
 }
 
-func init() {
-	Logs.Flags().StringP("dependency", "d", "*", "Name of the dependency to only show the logs from")
-}
-
-func logsHandler(cmd *cobra.Command, args []string) {
-	closeReaders := showLogs(args[0], cmd.Flag("dependency").Value.String())
-	defer closeReaders()
-	<-utils.WaitForCancel()
-}
-
-func showLogs(serviceID string, dependency string) func() {
-	reply, err := cli().GetService(context.Background(), &core.GetServiceRequest{
-		ServiceID: serviceID,
-	})
-	utils.HandleError(err)
-	readers, err := reply.Service.Logs(dependency)
-	utils.HandleError(err)
-	for _, reader := range readers {
-		go stdcopy.StdCopy(os.Stdout, os.Stderr, reader)
+func newServiceLogsCmd(e ServiceExecutor) *serviceLogsCmd {
+	c := &serviceLogsCmd{
+		e:          e,
+		dependency: "*",
 	}
-	return func() {
+
+	c.cmd = newCommand(&cobra.Command{
+		Use:   "logs",
+		Short: "Show the logs of a service",
+		Example: `mesg-core service logs SERVICE
+mesg-core service logs SERVICE --dependency DEPENDENCY_NAME`,
+		Args: cobra.ExactArgs(1),
+		RunE: c.runE,
+	})
+	c.cmd.Flags().StringVarP(&c.dependency, "dependency", "d", c.dependency, "Name of the dependency to show the logs from")
+	return c
+}
+
+func (c *serviceLogsCmd) runE(cmd *cobra.Command, args []string) error {
+	readers, err := c.e.ServiceDependencyLogs(args[0], c.dependency)
+	if err != nil {
+		return err
+	}
+	defer func() {
 		for _, reader := range readers {
 			reader.Close()
 		}
+	}()
+
+	for _, reader := range readers {
+		go stdcopy.StdCopy(os.Stdout, os.Stderr, reader)
 	}
+
+	<-utils.WaitForCancel()
+	return nil
 }
