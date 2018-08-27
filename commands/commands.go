@@ -31,6 +31,8 @@ type ServiceExecutor interface {
 	ServiceStop(id string) error
 	ServiceValidate(path string) error
 	ServiceGenerateDocs(path string) error
+	ServiceListWitsStatus() ([]*service.Service, error)
+	ServiceInit(name, description, templateURL string, currentDir bool) error
 }
 
 type Executor interface {

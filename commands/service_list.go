@@ -1,76 +1,43 @@
 package commands
 
 import (
-	"context"
 	"fmt"
-	"sort"
-	"strings"
+	"os"
+	"text/tabwriter"
 
-	"github.com/logrusorgru/aurora"
-	"github.com/mesg-foundation/core/api/core"
-	"github.com/mesg-foundation/core/commands/utils"
-	"github.com/mesg-foundation/core/service"
 	"github.com/spf13/cobra"
 )
 
-type serviceStatus struct {
-	service *service.Service
-	status  service.StatusType
+type serviceListCmd struct {
+	baseCmd
+
+	e ServiceExecutor
 }
 
-func (s serviceStatus) String() string {
-	statusText := map[service.StatusType]aurora.Value{
-		service.STOPPED: aurora.Red("[Stopped]"),
-		service.RUNNING: aurora.Green("[Running]"),
-		service.PARTIAL: aurora.Brown("[Partial]"),
-	}
-	return strings.Join([]string{
-		"-",
-		statusText[s.status].String(),
-		aurora.Bold(s.service.Hash()).String(),
-		s.service.Name,
-	}, " ")
-}
-
-type byStatus []serviceStatus
-
-func (a byStatus) Len() int           { return len(a) }
-func (a byStatus) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-func (a byStatus) Less(i, j int) bool { return a[j].status < a[i].status }
-
-// List all the services
-var List = &cobra.Command{
-	Use:   "list",
-	Short: "List all published services",
-	Long: `This command returns all published services with basic information.
+func newServiceListCmd(e ServiceExecutor) *serviceListCmd {
+	c := &serviceListCmd{e: e}
+	c.cmd = newCommand(&cobra.Command{
+		Use:   "list",
+		Short: "List all published services",
+		Long: `This command returns all published services with basic information.
 Optionally, you can filter the services published by a specific developer:
 To have more details, see the [detail command](mesg-core_service_detail.md).`,
-	Example:           `mesg-core service list`,
-	Run:               listHandler,
-	DisableAutoGenTag: true,
+		Example: `mesg-core service list`,
+		RunE:    c.runE,
+	})
+	return c
 }
 
-func listHandler(cmd *cobra.Command, args []string) {
-	reply, err := cli().ListServices(context.Background(), &core.ListServicesRequest{})
-	utils.HandleError(err)
-	status, err := servicesWithStatus(reply.Services)
-	utils.HandleError(err)
-	sort.Sort(byStatus(status))
-	for _, serviceStatus := range status {
-		fmt.Println(serviceStatus)
+func (c *serviceListCmd) runE(cmd *cobra.Command, args []string) error {
+	services, err := c.e.ServiceListWitsStatus()
+	if err != nil {
+		return err
 	}
-}
 
-func servicesWithStatus(services []*service.Service) (status []serviceStatus, err error) {
+	w := tabwriter.NewWriter(os.Stdout, 0, 0, 4, ' ', 0)
+	fmt.Fprintf(w, "STATUS\tSERVICE\tNAME\n")
 	for _, s := range services {
-		st, err := s.Status()
-		if err != nil {
-			break
-		}
-		status = append(status, serviceStatus{
-			service: s,
-			status:  st,
-		})
+		fmt.Fprintf(w, "%s\t%s\t%s\n", "unknown" /* s.Status() */, s.Hash(), s.Name)
 	}
-	return
+	return w.Flush()
 }

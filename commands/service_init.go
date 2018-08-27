@@ -138,15 +138,6 @@ mesg-core service init --current`,
 // 	return
 // }
 
-// func downloadTemplate(tmpl *templateStruct) (path string, err error) {
-// 	path, err = createTempFolder()
-// 	if err != nil {
-// 		return "", err
-// 	}
-
-// 	return path, gitClone(tmpl.URL, path, "Downloading template "+tmpl.Name+"...")
-// }
-
 // func ask(label string, value string, validator survey.Validator) string {
 // 	if value != "" {
 // 		return value
@@ -162,76 +153,4 @@ mesg-core service init --current`,
 // 	replacement["name"] = ask("Name:", cmd.Flag("name").Value.String(), survey.Required)
 // 	replacement["description"] = ask("Description:", cmd.Flag("description").Value.String(), nil)
 // 	return
-// }
-
-// func copyDir(src string, dst string, replacement map[string]string) (err error) {
-// 	src = filepath.Clean(src)
-// 	dst = filepath.Clean(dst)
-// 	err = os.MkdirAll(dst, os.ModePerm)
-// 	if err != nil {
-// 		return
-// 	}
-
-// 	entries, err := ioutil.ReadDir(src)
-// 	if err != nil {
-// 		return
-// 	}
-
-// 	for _, entry := range entries {
-// 		srcPath := filepath.Join(src, entry.Name())
-// 		dstPath := filepath.Join(dst, entry.Name())
-
-// 		if entry.IsDir() {
-// 			err = copyDir(srcPath, dstPath, replacement)
-// 			if err != nil {
-// 				break
-// 			}
-// 		} else {
-// 			// Skip symlinks.
-// 			if entry.Mode()&os.ModeSymlink != 0 {
-// 				continue
-// 			}
-
-// 			err = copyFile(srcPath, dstPath, replacement)
-// 			if err != nil {
-// 				break
-// 			}
-// 		}
-// 	}
-
-// 	return
-
-// }
-
-// func copyFile(src, dst string, replacement map[string]string) error {
-// 	in, err := os.Open(src)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	defer in.Close()
-
-// 	out, err := os.Create(dst)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	defer out.Close()
-
-// 	return transform(dst, src, replacement)
-// }
-
-// func transform(dest string, source string, replacement map[string]string) error {
-// 	body, err := ioutil.ReadFile(source)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	res := string(body)
-// 	for key, value := range replacement {
-// 		res = strings.Replace(res, "{{"+key+"}}", value, -1)
-// 	}
-// 	si, err := os.Stat(source)
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	return ioutil.WriteFile(dest, []byte(res), si.Mode())
 // }
