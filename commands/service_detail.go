@@ -26,7 +26,7 @@ func newServiceDetailCmd(e ServiceExecutor) *serviceDetailCmd {
 }
 
 func (c *serviceDetailCmd) runE(cmd *cobra.Command, args []string) error {
-	service, err := c.e.Detail(args[0])
+	service, err := c.e.ServiceDetail(args[0])
 	if err != nil {
 		return err
 	}

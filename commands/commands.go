@@ -4,6 +4,7 @@ import (
 	"io"
 
 	"github.com/krhubert/core/container"
+	"github.com/mesg-foundation/core/api/core"
 	"github.com/mesg-foundation/core/service"
 	"github.com/spf13/cobra"
 )
@@ -16,10 +17,12 @@ type RootExecutor interface {
 }
 
 type ServiceExecutor interface {
-	DeleteAll() error
-	Delete(ids ...string) error
-	Deploy(path string) (id string, valid bool, err error)
-	Detail(id string) (*service.Service, error)
+	ServiceDeleteAll() error
+	ServiceDelete(ids ...string) error
+	ServiceDeploy(path string) (id string, valid bool, err error)
+	ServiceDetail(id string) (*service.Service, error)
+	ServiceDev(path, eventFilter, taskFilter, outputFilter string) (id string, listeEvents chan core.EventData, listenResults chan core.ResultData, err error)
+	ServiceLogs(ids ...string) (io.ReadCloser, error)
 }
 
 type Executor interface {

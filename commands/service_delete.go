@@ -49,7 +49,7 @@ func (c *serviceDeleteCmd) runE(cmd *cobra.Command, args []string) error {
 	}
 
 	if c.all {
-		if err := c.e.DeleteAll(); err != nil {
+		if err := c.e.ServiceDeleteAll(); err != nil {
 			return err
 		}
 		fmt.Println("All services are deleted")
@@ -57,7 +57,7 @@ func (c *serviceDeleteCmd) runE(cmd *cobra.Command, args []string) error {
 	}
 
 	for _, arg := range args {
-		if err := c.e.Delete(arg); err != nil {
+		if err := c.e.ServiceDelete(arg); err != nil {
 			fmt.Fprintln(os.Stderr, "Can't delete %s service: %s", arg, err)
 		} else {
 			fmt.Println("Service", arg, "deleted")

@@ -34,7 +34,7 @@ func (c *serviceDeployCmd) runE(cmd *cobra.Command, args []string) error {
 	if len(args) > 1 {
 		path = args[0]
 	}
-	id, valid, err := c.e.Deploy(path)
+	id, valid, err := c.e.ServiceDeploy(path)
 	if err != nil {
 		return err
 	}
