@@ -58,7 +58,7 @@ func (c *serviceDeleteCmd) runE(cmd *cobra.Command, args []string) error {
 
 	for _, arg := range args {
 		if err := c.e.ServiceDelete(arg); err != nil {
-			fmt.Fprintln(os.Stderr, "Can't delete %s service: %s", arg, err)
+			fmt.Fprintf(os.Stderr, "can't delete %s service: %s\n", arg, err)
 		} else {
 			fmt.Println("Service", arg, "deleted")
 		}
