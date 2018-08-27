@@ -34,9 +34,9 @@ func newServiceExecuteCmd(e ServiceExecutor) *serviceExecuteCmd {
 		PreRunE: c.preRunE,
 		RunE:    c.runE,
 	})
-	c.cmd.Flags().StringVarP(&c.taskKey, "task", "t", "", "Run the given task")
+	c.cmd.Flags().StringVarP(&c.taskKey, "task", "t", c.taskKey, "Run the given task")
 	c.cmd.Flags().VarP(xpflag.NewStringToStringValue(&c.executeData, nil), "data", "d", "data required to run the task")
-	c.cmd.Flags().StringVarP(&c.jsonFile, "json", "j", "", "Path to a JSON file containing the data required to run the task")
+	c.cmd.Flags().StringVarP(&c.jsonFile, "json", "j", c.jsonFile, "Path to a JSON file containing the data required to run the task")
 	return c
 }
 
@@ -48,8 +48,7 @@ func (c *serviceExecuteCmd) preRunE(cmd *cobra.Command, args []string) error {
 }
 
 func (c *serviceExecuteCmd) runE(cmd *cobra.Command, args []string) error {
-	id := args[0]
-	s, err := c.e.ServiceByID(id)
+	s, err := c.e.ServiceByID(args[0])
 	if err != nil {
 		return err
 	}

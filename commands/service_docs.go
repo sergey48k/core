@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -14,6 +15,7 @@ type serviceDocsCmd struct {
 	baseCmd
 
 	force bool
+	path  string
 
 	e ServiceExecutor
 }
@@ -25,28 +27,28 @@ func newServiceDocsCmd(e ServiceExecutor) *serviceDocsCmd {
 		Short: "Generate the documentation for the service in a README.md file",
 		Example: `mesg-core service gen-doc
 mesg-core service gen-doc ./PATH_TO_SERVICE`,
-		RunE: c.runE,
+		PreRunE: c.preRunE,
+		RunE:    c.runE,
 	})
 	return c
 }
 
-func (c *serviceDocsCmd) runE(cmd *cobra.Command, args []string) error {
-	path := "./"
-	if len(args) > 0 {
-		path = args[0]
-	}
-
-	readmePath := filepath.Join(path, "README.md")
+func (c *serviceDocsCmd) preRunE(cmd *cobra.Command, args []string) error {
+	c.path = getFirstOrDefault(args, "./")
+	readmePath := filepath.Join(c.path, "README.md")
 	if _, err := os.Stat(readmePath); !c.force && err == nil {
-		if survey.AskOne(&survey.Confirm{Message: "The file README.md already exists. Do you want to overwrite it?"}, &c.force, nil) != nil {
-			return nil
+		if err := survey.AskOne(&survey.Confirm{Message: "The file README.md already exists. Do you want to overwrite it?"}, &c.force, nil); err != nil {
+			return err
 		}
 		if !c.force {
-			return nil
+			return errors.New("can't continue without confirmation")
 		}
 	}
+	return nil
+}
 
-	if err := c.e.ServiceGenerateDocs(path); err != nil {
+func (c *serviceDocsCmd) runE(cmd *cobra.Command, args []string) error {
+	if err := c.e.ServiceGenerateDocs(c.path); err != nil {
 		return err
 	}
 

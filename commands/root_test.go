@@ -25,7 +25,7 @@ func TestRootCmd(t *testing.T) {
 		{"status"},
 		{"stop"},
 		{"logs"},
-		// {"service"},
+		{"service"},
 	} {
 		require.Truef(t, findCommandChildByUse(cmd, tt.use), "command %q not found", tt.use)
 	}

@@ -23,6 +23,7 @@ func newServiceListCmd(e ServiceExecutor) *serviceListCmd {
 Optionally, you can filter the services published by a specific developer:
 To have more details, see the [detail command](mesg-core_service_detail.md).`,
 		Example: `mesg-core service list`,
+		Args:    cobra.NoArgs,
 		RunE:    c.runE,
 	})
 	return c

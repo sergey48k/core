@@ -27,9 +27,10 @@ func newStartCmd(e RootExecutor) *startCmd {
 		e:   e,
 	}
 	c.cmd = newCommand(&cobra.Command{
-		Use:   "start",
-		Short: "Start the MESG Core",
-		RunE:  c.runE,
+		Use:     "start",
+		Short:   "Start the MESG Core",
+		PreRunE: c.preRunE,
+		RunE:    c.runE,
 	})
 
 	c.cmd.Flags().Var(&c.lfv, "log-format", "log format [text|json]")
@@ -37,11 +38,14 @@ func newStartCmd(e RootExecutor) *startCmd {
 	return c
 }
 
-func (c *startCmd) runE(cmd *cobra.Command, args []string) error {
+func (c *startCmd) preRunE(cmd *cobra.Command, args []string) error {
 	// TODO: figure out how to move this to config
 	viper.Set(config.LogFormat, string(c.lfv))
 	viper.Set(config.LogLevel, string(c.llv))
+	return nil
+}
 
+func (c *startCmd) runE(cmd *cobra.Command, args []string) error {
 	status, err := c.e.Status()
 	if err != nil {
 		return err

@@ -11,6 +11,8 @@ import (
 type serviceDeployCmd struct {
 	baseCmd
 
+	path string
+
 	e ServiceExecutor
 }
 
@@ -23,18 +25,20 @@ func newServiceDeployCmd(e ServiceExecutor) *serviceDeployCmd {
 
 To get more information, see the [deploy page from the documentation](https://docs.mesg.com/guide/service/deploy-a-service.html)`,
 		Example: `mesg-core service deploy PATH_TO_SERVICE`,
+		PreRunE: c.preRunE,
 		RunE:    c.runE,
 		Args:    cobra.MaximumNArgs(1),
 	})
 	return c
 }
 
+func (c *serviceDeployCmd) preRunE(cmd *cobra.Command, args []string) error {
+	c.path = getFirstOrDefault(args, "./")
+	return nil
+}
+
 func (c *serviceDeployCmd) runE(cmd *cobra.Command, args []string) error {
-	path := "."
-	if len(args) > 1 {
-		path = args[0]
-	}
-	id, valid, err := c.e.ServiceDeploy(path)
+	id, valid, err := c.e.ServiceDeploy(c.path)
 	if err != nil {
 		return err
 	}

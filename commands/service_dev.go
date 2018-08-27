@@ -16,6 +16,7 @@ type serviceDevCmd struct {
 	eventFilter  string
 	taskFilter   string
 	outputFilter string
+	path         string
 
 	e ServiceExecutor
 }
@@ -31,21 +32,22 @@ func newServiceDevCmd(e ServiceExecutor) *serviceDevCmd {
 		Short:   "Run your service in development mode",
 		Example: "mesg-core service dev PATH",
 		Args:    cobra.MaximumNArgs(1),
+		PreRunE: c.preRunE,
 		RunE:    c.runE,
 	})
-	c.cmd.Flags().StringVarP(&c.eventFilter, "event-filter", "e", "*", "Only log the data of the given event")
+	c.cmd.Flags().StringVarP(&c.eventFilter, "event-filter", "e", c.eventFilter, "Only log the data of the given event")
 	c.cmd.Flags().StringVarP(&c.taskFilter, "task-filter", "t", "", "Only log the result of the given task")
 	c.cmd.Flags().StringVarP(&c.outputFilter, "output-filter", "o", "", "Only log the data of the given output of a task result. If set, you also need to set the task in --task-filter")
 	return c
 }
 
-func (c *serviceDevCmd) runE(cmd *cobra.Command, args []string) error {
-	path := "./"
-	if len(args) > 0 {
-		path = args[0]
-	}
+func (c *serviceDevCmd) preRunE(cmd *cobra.Command, args []string) error {
+	c.path = getFirstOrDefault(args, "./")
+	return nil
+}
 
-	id, listeEvents, listeResults, err := c.e.ServiceDev(path, c.eventFilter, c.taskFilter, c.outputFilter)
+func (c *serviceDevCmd) runE(cmd *cobra.Command, args []string) error {
+	id, listeEvents, listeResults, err := c.e.ServiceDev(c.path, c.eventFilter, c.taskFilter, c.outputFilter)
 	if err != nil {
 		return err
 	}

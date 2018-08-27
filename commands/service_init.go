@@ -15,7 +15,7 @@ type serviceInitCmd struct {
 	e ServiceExecutor
 }
 
-func newServiceIntCmd(e ServiceExecutor) *serviceInitCmd {
+func newServiceInitCmd(e ServiceExecutor) *serviceInitCmd {
 	c := &serviceInitCmd{e: e}
 	c.cmd = newCommand(&cobra.Command{
 		Use:   "init",
@@ -26,12 +26,13 @@ To get more information, see the page [service file from the documentation](http
 		Example: `mesg-core service init
 mesg-core service init --name NAME --description DESCRIPTION
 mesg-core service init --current`,
+		Args: cobra.NoArgs,
 		RunE: nil, // c.runE,
 	})
-	c.cmd.Flags().StringVarP(&c.name, "name", "n", "", "Name")
-	c.cmd.Flags().StringVarP(&c.description, "description", "d", "", "Description")
-	c.cmd.Flags().BoolVarP(&c.currentDir, "current", "c", false, "Create the service in the current path")
-	c.cmd.Flags().StringVarP(&c.templateURL, "template", "t", "", "Specify the template URL to use")
+	c.cmd.Flags().StringVarP(&c.name, "name", "n", c.name, "Name")
+	c.cmd.Flags().StringVarP(&c.description, "description", "d", c.description, "Description")
+	c.cmd.Flags().BoolVarP(&c.currentDir, "current", "c", c.currentDir, "Create the service in the current path")
+	c.cmd.Flags().StringVarP(&c.templateURL, "template", "t", c.templateURL, "Specify the template URL to use")
 	return c
 }
 

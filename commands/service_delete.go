@@ -25,29 +25,36 @@ func newServiceDeleteCmd(e ServiceExecutor) *serviceDeleteCmd {
 		Short: "Delete one or many services",
 		Example: `mesg-core service delete SERVICE_ID [SERVICE_ID...]
 mesg-core service delete --all`,
-		RunE: c.runE,
+		PreRunE: c.preRunE,
+		RunE:    c.runE,
 	})
 
-	c.cmd.Flags().BoolVar(&c.all, "all", false, "Delete all services")
-	c.cmd.Flags().BoolVarP(&c.force, "force", "f", false, "Force delete all services")
+	c.cmd.Flags().BoolVar(&c.all, "all", c.all, "Delete all services")
+	c.cmd.Flags().BoolVarP(&c.force, "force", "f", c.force, "Force delete all services")
 	return c
 }
 
-func (c *serviceDeleteCmd) runE(cmd *cobra.Command, args []string) error {
+func (c *serviceDeleteCmd) preRunE(cmd *cobra.Command, args []string) error {
 	if len(args) == 0 && !c.all {
 		return errors.New("at least one service id must be provided (or run with --all flag)")
 	}
 
-	if c.all && !c.force {
-		if survey.AskOne(&survey.Confirm{Message: "Are you sure to delete all services?"}, &c.force, nil) != nil {
-			return nil
-		}
-		// is still no confirm return.
-		if !c.force {
-			return nil
-		}
+	if !c.all || (c.all && c.force) {
+		return nil
 	}
 
+	if err := survey.AskOne(&survey.Confirm{Message: "Are you sure to delete all services?"}, &c.force, nil); err != nil {
+		return err
+	}
+
+	// is still no confirm .
+	if !c.force {
+		return errors.New("can't continue without confirmation")
+	}
+	return nil
+}
+
+func (c *serviceDeleteCmd) runE(cmd *cobra.Command, args []string) error {
 	if c.all {
 		if err := c.e.ServiceDeleteAll(); err != nil {
 			return err

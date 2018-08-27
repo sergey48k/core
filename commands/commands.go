@@ -53,3 +53,10 @@ func newCommand(c *cobra.Command) *cobra.Command {
 	c.DisableAutoGenTag = true
 	return c
 }
+
+func getFirstOrDefault(args []string, def string) string {
+	if len(args) > 0 {
+		return args[0]
+	}
+	return def
+}

@@ -16,19 +16,19 @@ func newRootServiceCmd(e ServiceExecutor) *rootServiceCmd {
 	})
 
 	c.cmd.AddCommand(
-	// newDeployCmd(e),
-	// newValidateCmd(e),
-	// newTestCmd(e),
-	// newStartCmd(e),
-	// newStopCmd(e),
-	// newDetailCmd(e),
-	// newListCmd(e),
-	// newInitCmd(e),
-	// newDeleteCmd(e),
-	// newLogsCmd(e),
-	// newDocsCmd(e),
-	// newDevCmd(e),
-	// newExecuteCmd(e),
+		newServiceTestCmd().cmd,
+		newServiceDeployCmd(e).cmd,
+		newServiceValidateCmd(e).cmd,
+		newServiceStartCmd(e).cmd,
+		newServiceStopCmd(e).cmd,
+		newServiceDetailCmd(e).cmd,
+		newServiceListCmd(e).cmd,
+		newServiceInitCmd(e).cmd,
+		newServiceDeleteCmd(e).cmd,
+		newServiceLogsCmd(e).cmd,
+		newServiceDocsCmd(e).cmd,
+		newServiceDevCmd(e).cmd,
+		newServiceExecuteCmd(e).cmd,
 	)
 	return c
 }

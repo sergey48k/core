@@ -19,7 +19,7 @@ func newServiceStartCmd(e ServiceExecutor) *serviceStartCmd {
 		Use:     "start SERVICE",
 		Short:   "Start a service",
 		Long:    "Start a service from the published available services. You have to provide a stake value and duration.",
-		Example: `mesg-core service start SERVICE_ID`,
+		Example: `mesg-core service start SERVICE`,
 		Args:    cobra.ExactArgs(1),
 		RunE:    c.runE,
 	})
