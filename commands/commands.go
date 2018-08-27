@@ -17,12 +17,14 @@ type RootExecutor interface {
 }
 
 type ServiceExecutor interface {
+	ServiceByID(id string) (*service.Service, error)
 	ServiceDeleteAll() error
 	ServiceDelete(ids ...string) error
 	ServiceDeploy(path string) (id string, valid bool, err error)
 	ServiceDetail(id string) (*service.Service, error)
 	ServiceDev(path, eventFilter, taskFilter, outputFilter string) (id string, listeEvents chan core.EventData, listenResults chan core.ResultData, err error)
 	ServiceLogs(ids ...string) (io.ReadCloser, error)
+	ServiceExeucteTask(id, taskKey, inputData string, tags []string) (listenResults chan core.ResultData, err error)
 }
 
 type Executor interface {
