@@ -1,4 +1,4 @@
-package service
+package commands
 
 import (
 	"errors"
@@ -8,26 +8,28 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type deployCmd struct {
+type serviceDeployCmd struct {
+	baseCmd
+
 	e ServiceExecutor
 }
 
-func newDeployCmd(e ServiceExecutor) *cobra.Command {
-	c := &deployCmd{e: e}
-	return &cobra.Command{
+func newServiceDeployCmd(e ServiceExecutor) *serviceDeployCmd {
+	c := &serviceDeployCmd{e: e}
+	c.cmd = newCommand(&cobra.Command{
 		Use:   "deploy",
 		Short: "Deploy a service",
 		Long: `Deploy a service.
 
 To get more information, see the [deploy page from the documentation](https://docs.mesg.com/guide/service/deploy-a-service.html)`,
-		Example:           `mesg-core service deploy PATH_TO_SERVICE`,
-		RunE:              c.runE,
-		Args:              cobra.MaximumNArgs(1),
-		DisableAutoGenTag: true,
-	}
+		Example: `mesg-core service deploy PATH_TO_SERVICE`,
+		RunE:    c.runE,
+		Args:    cobra.MaximumNArgs(1),
+	})
+	return c
 }
 
-func (c *deployCmd) runE(cmd *cobra.Command, args []string) error {
+func (c *serviceDeployCmd) runE(cmd *cobra.Command, args []string) error {
 	path := "."
 	if len(args) > 1 {
 		path = args[0]

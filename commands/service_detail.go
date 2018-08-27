@@ -1,4 +1,4 @@
-package service
+package commands
 
 import (
 	"fmt"
@@ -8,23 +8,24 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type detailCmd struct {
+type serviceDetailCmd struct {
+	baseCmd
 	e ServiceExecutor
 }
 
-func newDetailCmd(e ServiceExecutor) *cobra.Command {
-	c := &detailCmd{e: e}
-	return &cobra.Command{
-		Use:               "detail SERVICE",
-		Short:             "Show details of a published service",
-		Args:              cobra.ExactArgs(1),
-		Example:           "mesg-core service detail SERVICE",
-		RunE:              c.runE,
-		DisableAutoGenTag: true,
-	}
+func newServiceDetailCmd(e ServiceExecutor) *serviceDetailCmd {
+	c := &serviceDetailCmd{e: e}
+	c.cmd = newCommand(&cobra.Command{
+		Use:     "detail SERVICE",
+		Short:   "Show details of a published service",
+		Args:    cobra.ExactArgs(1),
+		Example: "mesg-core service detail SERVICE",
+		RunE:    c.runE,
+	})
+	return c
 }
 
-func (c *detailCmd) runE(cmd *cobra.Command, args []string) error {
+func (c *serviceDetailCmd) runE(cmd *cobra.Command, args []string) error {
 	service, err := c.e.Detail(args[0])
 	if err != nil {
 		return err

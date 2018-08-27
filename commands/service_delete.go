@@ -1,4 +1,4 @@
-package service
+package commands
 
 import (
 	"errors"
@@ -9,30 +9,31 @@ import (
 	survey "gopkg.in/AlecAivazis/survey.v1"
 )
 
-type deleteCmd struct {
+type serviceDeleteCmd struct {
+	baseCmd
+
 	all   bool
 	force bool
 
 	e ServiceExecutor
 }
 
-func newDeleteCmd(e ServiceExecutor) *cobra.Command {
-	c := deleteCmd{e: e}
-	cmd := &cobra.Command{
+func newServiceDeleteCmd(e ServiceExecutor) *serviceDeleteCmd {
+	c := &serviceDeleteCmd{e: e}
+	c.cmd = newCommand(&cobra.Command{
 		Use:   "delete",
 		Short: "Delete one or many services",
 		Example: `mesg-core service delete SERVICE_ID [SERVICE_ID...]
 mesg-core service delete --all`,
-		RunE:              c.runE,
-		DisableAutoGenTag: true,
-	}
+		RunE: c.runE,
+	})
 
-	cmd.Flags().BoolVar(&c.all, "all", false, "Delete all services")
-	cmd.Flags().BoolVarP(&c.force, "force", "f", false, "Force delete all services")
-	return cmd
+	c.cmd.Flags().BoolVar(&c.all, "all", false, "Delete all services")
+	c.cmd.Flags().BoolVarP(&c.force, "force", "f", false, "Force delete all services")
+	return c
 }
 
-func (c *deleteCmd) runE(cmd *cobra.Command, args []string) error {
+func (c *serviceDeleteCmd) runE(cmd *cobra.Command, args []string) error {
 	if len(args) == 0 && !c.all {
 		return errors.New("at least one service id must be provided (or run with --all flag)")
 	}

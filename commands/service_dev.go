@@ -1,4 +1,4 @@
-package service
+package commands
 
 import (
 	"context"
@@ -12,23 +12,35 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// Dev command will run the service from a path in dev mode
-// It will also listen for all events and outputs from the tasks
-var Dev = &cobra.Command{
-	Use:               "dev",
-	Short:             "Run your service in development mode",
-	Example:           "mesg-core service dev PATH",
-	Run:               devHandler,
-	DisableAutoGenTag: true,
+type serviceDevCmd struct {
+	baseCmd
+
+	eventFilter  string
+	taskFilter   string
+	outputFilter string
+
+	e ServiceExecutor
 }
 
-func init() {
-	Dev.Flags().StringP("event-filter", "e", "*", "Only log the data of the given event")
-	Dev.Flags().StringP("task-filter", "t", "", "Only log the result of the given task")
-	Dev.Flags().StringP("output-filter", "o", "", "Only log the data of the given output of a task result. If set, you also need to set the task in --task-filter")
+func newServiceDevCmd(e ServiceExecutor) *serviceDevCmd {
+	c = &serviceDevCmd{
+		e:           e,
+		eventFilter: "*",
+	}
+
+	c.cmd = newCommand(&cobra.Command{
+		Use:     "dev",
+		Short:   "Run your service in development mode",
+		Example: "mesg-core service dev PATH",
+		RunE:    c.runE,
+	})
+	c.cmd.Flags().String("event-filter", "e", "*", "Only log the data of the given event")
+	c.cmd.Flags().StringP("task-filter", "t", "", "Only log the result of the given task")
+	c.cmd.Flags().StringP("output-filter", "o", "", "Only log the data of the given output of a task result. If set, you also need to set the task in --task-filter")
+	return c
 }
 
-func devHandler(cmd *cobra.Command, args []string) {
+func (c *serviceDevCmd) runE(cmd *cobra.Command, args []string) error {
 	serviceID, isValid, err := createService(defaultPath(args))
 	if !isValid {
 		os.Exit(1)
@@ -46,7 +58,8 @@ func devHandler(cmd *cobra.Command, args []string) {
 	<-utils.WaitForCancel()
 
 	utils.ShowSpinnerForFunc(utils.SpinnerOptions{Text: "Deleting test service..."}, func() {
-		cli().DeleteService(context.Background(), &core.DeleteServiceRequest{ // Delete service. This will automatically stop the service too
+		// This will automatically stop the service too
+		cli().DeleteService(context.Background(), &core.DeleteServiceRequest{
 			ServiceID: serviceID,
 		})
 	})

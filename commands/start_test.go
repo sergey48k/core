@@ -8,12 +8,12 @@ import (
 
 func TestStartCmdFlags(t *testing.T) {
 	c := newStartCmd(nil)
-	require.Equal(t, "text", string(c.lfv))
-	require.Equal(t, "info", string(c.llv))
+	require.Equal(t, "text", c.lfv.String())
+	require.Equal(t, "info", c.llv.String())
 
 	require.NoError(t, c.cmd.Flags().Set("log-format", "json"))
-	require.Equal(t, "json", string(c.lfv))
+	require.Equal(t, "json", c.lfv.String())
 
 	require.NoError(t, c.cmd.Flags().Set("log-level", "debug"))
-	require.Equal(t, "debug", string(c.llv))
+	require.Equal(t, "debug", c.llv.String())
 }

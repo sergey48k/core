@@ -4,6 +4,7 @@ import (
 	"io"
 
 	"github.com/krhubert/core/container"
+	"github.com/mesg-foundation/core/service"
 	"github.com/spf13/cobra"
 )
 
@@ -14,13 +15,20 @@ type RootExecutor interface {
 	Logs() (io.ReadCloser, error)
 }
 
+type ServiceExecutor interface {
+	DeleteAll() error
+	Delete(ids ...string) error
+	Deploy(path string) (id string, valid bool, err error)
+	Detail(id string) (*service.Service, error)
+}
+
 type Executor interface {
 	RootExecutor
-	// 	TODO(uncoment): service.ServiceExecutor
+	ServiceExecutor
 }
 
 func Build(e Executor) *cobra.Command {
-	return newRootCmd(e)
+	return newRootCmd(e).cmd
 }
 
 type baseCmd struct {

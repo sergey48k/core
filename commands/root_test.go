@@ -17,7 +17,7 @@ func findCommandChildByUse(root *cobra.Command, use string) bool {
 }
 
 func TestRootCmd(t *testing.T) {
-	cmd := newRootCmd(RootExecutor(nil))
+	cmd := Build(nil)
 	for _, tt := range []struct {
 		use string
 	}{
@@ -25,7 +25,7 @@ func TestRootCmd(t *testing.T) {
 		{"status"},
 		{"stop"},
 		{"logs"},
-		{"service"},
+		// {"service"},
 	} {
 		require.Truef(t, findCommandChildByUse(cmd, tt.use), "command %q not found", tt.use)
 	}

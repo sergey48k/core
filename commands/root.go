@@ -4,18 +4,23 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func newRootCmd(e Executor) *cobra.Command {
-	cmd := newCommand(&cobra.Command{
+type rootCmd struct {
+	baseCmd
+}
+
+func newRootCmd(e Executor) *rootCmd {
+	c := &rootCmd{}
+	c.cmd = newCommand(&cobra.Command{
 		Use:   "mesg-core",
 		Short: "MESG Core",
 	})
 
-	cmd.AddCommand(
+	c.cmd.AddCommand(
 		newStartCmd(e).cmd,
 		newStatusCmd(e).cmd,
 		newStopCmd(e).cmd,
 		newLogsCmd(e).cmd,
-		// TODO(uncomment): service.Build(e),
+		newRootServiceCmd(e).cmd,
 	)
-	return cmd
+	return c
 }

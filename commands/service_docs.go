@@ -1,4 +1,4 @@
-package service
+package commands
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/logrusorgru/aurora"
-	"github.com/mesg-foundation/core/commands/service/assets"
+	"github.com/mesg-foundation/core/commands/assets"
 	"github.com/mesg-foundation/core/commands/utils"
 	"github.com/mesg-foundation/core/service/importer"
 	"github.com/spf13/cobra"
